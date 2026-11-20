@@ -1,1 +1,606 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>3D Merge Numbers TG</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        :root {
+            --bg-color: #14161f;
+            --board-bg: #1e2230;
+            --board-shadow: #0d0f17;
+            --cell-bg: #282d40;
+            --text-color: #ffffff;
+            --accent: #0095ff;
+        }
+        * {
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-touch-callout: none;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+        body {
+            margin: 0;
+            padding: 16px;
+            background: radial-gradient(circle at top, #23283b 0%, var(--bg-color) 100%);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            overflow: hidden;
+            touch-action: none; /* Отключаем системные жесты браузера при перетаскивании */
+        }
+        .header {
+            width: 100%;
+            max-width: 370px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+        }
+        .score-box {
+            background: var(--board-bg);
+            padding: 8px 22px;
+            border-radius: 14px;
+            text-align: center;
+            box-shadow: 0 5px 0 var(--board-shadow), 0 8px 15px rgba(0,0,0,0.4);
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+        .score-label { font-size: 11px; letter-spacing: 1px; opacity: 0.7; font-weight: 700; }
+        .score-val { 
+            font-size: 24px; 
+            font-weight: 900; 
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+        .controls {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 14px;
+            width: 100%;
+            max-width: 370px;
+        }
+        button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 12px;
+            background: #2c3246;
+            color: white;
+            font-size: 15px;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 0 5px 0 #181b26, 0 8px 12px rgba(0,0,0,0.3);
+            border-top: 1px solid rgba(255,255,255,0.15);
+            transition: transform 0.1s, box-shadow 0.1s, background 0.2s;
+        }
+        button.active { 
+            background: linear-gradient(180deg, #1ea7ff 0%, #0077e6 100%);
+            box-shadow: 0 5px 0 #004c99, 0 8px 15px rgba(0,119,230,0.4);
+        }
+        button:active { 
+            transform: translateY(4px); 
+            box-shadow: 0 1px 0 #181b26;
+        }
+        .hint {
+            font-size: 13px;
+            opacity: 0.75;
+            margin-bottom: 14px;
+            text-align: center;
+        }
 
+        /* 3D Игровое поле */
+        #board {
+            width: 100%;
+            max-width: 370px;
+            aspect-ratio: 1 / 1;
+            background: var(--board-bg);
+            border-radius: 20px;
+            padding: 12px;
+            display: grid;
+            gap: 12px;
+            position: relative;
+            box-shadow: 
+                0 10px 0 var(--board-shadow),
+                0 20px 30px rgba(0, 0, 0, 0.6),
+                inset 0 2px 3px rgba(255, 255, 255, 0.1);
+        }
+
+        /* Углубленная пустая ячейка */
+        .slot {
+            background: #161924;
+            border-radius: 14px;
+            box-shadow: inset 0 4px 8px rgba(0,0,0,0.6), 0 1px 0 rgba(255,255,255,0.06);
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Объемный 3D-куб с цифрой */
+        .tile {
+            width: 100%;
+            height: 100%;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            color: #ffffff;
+            cursor: grab;
+            position: relative;
+            /* Объемный текст */
+            text-shadow: 0 2px 0 rgba(0,0,0,0.35), 0 4px 8px rgba(0,0,0,0.3);
+            /* Блик сверху */
+            border-top: 2px solid rgba(255, 255, 255, 0.45);
+            transition: transform 0.12s, box-shadow 0.12s, filter 0.12s;
+            touch-action: none;
+        }
+
+        .tile:active {
+            cursor: grabbing;
+        }
+
+        /* Подсветка выбранной плитки (если играют кликами) */
+        .tile.selected {
+            transform: translateY(-4px) scale(1.05);
+            outline: 3px solid #ffffff;
+            filter: brightness(1.15);
+            z-index: 5;
+        }
+
+        /* Подсветка цели при наведении перетаскиваемой плитки */
+        .slot.drag-over .tile {
+            transform: scale(1.08);
+            outline: 3px dashed #ffffff;
+            filter: brightness(1.2);
+        }
+
+        /* Летающий клон плитки при перетаскивании мышкой/пальцем */
+        .dragging-ghost {
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            transform: scale(1.12) rotate(3deg);
+            opacity: 0.95;
+            box-shadow: 0 18px 28px rgba(0,0,0,0.55) !important;
+            transition: none !important;
+        }
+
+        @keyframes pop {
+            0% { transform: scale(0.5); }
+            70% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        .tile.pop {
+            animation: pop 0.22s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        /* Уникальные 3D-цвета для каждого числа */
+        /* 2 - Светло-синий */
+        .v-2 {
+            background: linear-gradient(180deg, #5cc8ff 0%, #249be8 100%);
+            box-shadow: 0 6px 0 #1468a3, 0 10px 15px rgba(0,0,0,0.35);
+            font-size: 34px;
+        }
+        /* 4 - Оранжевый */
+        .v-4 {
+            background: linear-gradient(180deg, #ffa73b 0%, #f06e00 100%);
+            box-shadow: 0 6px 0 #a34700, 0 10px 15px rgba(0,0,0,0.35);
+            font-size: 34px;
+        }
+        /* 8 - Темно-красный */
+        .v-8 {
+            background: linear-gradient(180deg, #c92a3e 0%, #8a0e1d 100%);
+            box-shadow: 0 6px 0 #4f040d, 0 10px 15px rgba(0,0,0,0.4);
+            font-size: 34px;
+        }
+        /* 16 - Фиолетовый */
+        .v-16 {
+            background: linear-gradient(180deg, #a855f7 0%, #731dd8 100%);
+            box-shadow: 0 6px 0 #460b8c, 0 10px 15px rgba(0,0,0,0.4);
+            font-size: 31px;
+        }
+        /* 32 - Изумрудно-зеленый */
+        .v-32 {
+            background: linear-gradient(180deg, #2ce67a 0%, #0fa34e 100%);
+            box-shadow: 0 6px 0 #07612d, 0 10px 15px rgba(0,0,0,0.4);
+            font-size: 31px;
+        }
+        /* 64 - Ярко-розовый / Маджента */
+        .v-64 {
+            background: linear-gradient(180deg, #ff4da6 0%, #d41373 100%);
+            box-shadow: 0 6px 0 #820644, 0 10px 15px rgba(0,0,0,0.4);
+            font-size: 31px;
+        }
+        /* 128 - Бирюзовый / Циан */
+        .v-128 {
+            background: linear-gradient(180deg, #22e3d6 0%, #099c92 100%);
+            box-shadow: 0 6px 0 #045953, 0 10px 15px rgba(0,0,0,0.4);
+            font-size: 27px;
+        }
+        /* 256 - Золотой / Желтый */
+        .v-256 {
+            background: linear-gradient(180deg, #ffe033 0%, #e0a800 100%);
+            box-shadow: 0 6px 0 #8f6900, 0 10px 15px rgba(0,0,0,0.4);
+            font-size: 27px;
+        }
+        /* 512 - Индиго / Глубокий синий */
+        .v-512 {
+            background: linear-gradient(180deg, #5c7cfa 0%, #364fc7 100%);
+            box-shadow: 0 6px 0 #1c2b75, 0 10px 15px rgba(0,0,0,0.4);
+            font-size: 27px;
+        }
+        /* 1024 - Лаймовый */
+        .v-1024 {
+            background: linear-gradient(180deg, #94d82d 0%, #5c940d 100%);
+            box-shadow: 0 6px 0 #335405, 0 10px 15px rgba(0,0,0,0.4);
+            font-size: 22px;
+        }
+        /* 2048 - Королевский коралл */
+        .v-2048 {
+            background: linear-gradient(180deg, #ff6b6b 0%, #e03131 100%);
+            box-shadow: 0 6px 0 #8a1616, 0 10px 15px rgba(0,0,0,0.4);
+            font-size: 22px;
+        }
+        /* 4096+ - Космический неон */
+        .v-high {
+            background: linear-gradient(180deg, #f8f9fa 0%, #adb5bd 100%);
+            color: #14161f;
+            text-shadow: 0 1px 0 #ffffff;
+            box-shadow: 0 6px 0 #495057, 0 10px 15px rgba(0,0,0,0.5);
+            font-size: 20px;
+        }
+
+        #game-over {
+            position: absolute;
+            inset: 0;
+            background: rgba(14, 16, 23, 0.88);
+            backdrop-filter: blur(4px);
+            border-radius: 20px;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            z-index: 20;
+        }
+        #game-over h2 {
+            margin: 0;
+            text-shadow: 0 3px 6px rgba(0,0,0,0.6);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div class="score-box">
+            <div class="score-label">СЧЕТ</div>
+            <div class="score-val" id="score">0</div>
+        </div>
+        <button onclick="initGame()" style="max-width: 130px;">Заново</button>
+    </div>
+
+    <div class="controls">
+        <button id="btn-3" onclick="setMode(3)">Режим 3×3</button>
+        <button id="btn-4" class="active" onclick="setMode(4)">Режим 4×4</button>
+    </div>
+
+    <div class="hint">Перетаскивай или нажимай на одинаковые кубы</div>
+
+    <div id="board">
+        <div id="game-over">
+            <h2>Ходов больше нет!</h2>
+            <button onclick="initGame()" class="active" style="max-width: 180px;">Играть снова</button>
+        </div>
+    </div>
+
+    <script>
+        const tg = window.Telegram?.WebApp;
+        if (tg) {
+            tg.expand();
+            tg.ready();
+        }
+
+        let size = 4;
+        let grid = [];
+        let score = 0;
+        let selectedCell = null;
+        let poppedCells = [];
+
+        // Переменные для перетаскивания (Drag & Drop)
+        let dragSource = null;
+        let dragGhost = null;
+        let dragStartX = 0;
+        let dragStartY = 0;
+        let isDragging = false;
+        let hoveredSlot = null;
+
+        const boardEl = document.getElementById('board');
+        const scoreEl = document.getElementById('score');
+        const gameOverEl = document.getElementById('game-over');
+
+        function setMode(newSize) {
+            size = newSize;
+            document.getElementById('btn-3').classList.toggle('active', size === 3);
+            document.getElementById('btn-4').classList.toggle('active', size === 4);
+            initGame();
+        }
+
+        function initGame() {
+            score = 0;
+            selectedCell = null;
+            poppedCells = [];
+            cleanupDrag();
+            updateScore(0);
+            gameOverEl.style.display = 'none';
+            grid = Array(size).fill().map(() => Array(size).fill(0));
+            
+            boardEl.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
+            boardEl.style.gridTemplateRows = `repeat(${size}, 1fr)`;
+            
+            const initialTiles = size === 3 ? 5 : 8;
+            for (let i = 0; i < initialTiles; i++) {
+                addRandomTile();
+            }
+            render();
+        }
+
+        function addRandomTile() {
+            let empty = [];
+            for (let r = 0; r < size; r++) {
+                for (let c = 0; c < size; c++) {
+                    if (grid[r][c] === 0) empty.push({r, c});
+                }
+            }
+            if (empty.length > 0) {
+                let {r, c} = empty[Math.floor(Math.random() * empty.length)];
+                grid[r][c] = Math.random() < 0.85 ? 2 : 4;
+                poppedCells.push(`${r}-${c}`);
+            }
+        }
+
+        function getColorClass(val) {
+            if (val <= 2048) return `v-${val}`;
+            return 'v-high';
+        }
+
+        function getEmptyCount() {
+            let count = 0;
+            for (let r = 0; r < size; r++) {
+                for (let c = 0; c < size; c++) {
+                    if (grid[r][c] === 0) count++;
+                }
+            }
+            return count;
+        }
+
+        // Общая функция объединения двух клеток
+        function mergeTiles(r1, c1, r2, c2) {
+            if (r1 === r2 && c1 === c2) return false;
+            const val1 = grid[r1][c1];
+            const val2 = grid[r2][c2];
+
+            if (val1 > 0 && val1 === val2) {
+                const newVal = val1 * 2;
+                grid[r1][c1] = 0;
+                grid[r2][c2] = newVal;
+
+                updateScore(newVal);
+                selectedCell = null;
+                poppedCells = [`${r2}-${c2}`];
+
+                addRandomTile();
+                if (getEmptyCount() > size) {
+                    addRandomTile();
+                }
+
+                if (tg?.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
+                render();
+
+                if (checkGameOver()) {
+                    gameOverEl.style.display = 'flex';
+                    if (tg?.HapticFeedback) tg.HapticFeedback.notificationOccurred('error');
+                }
+                return true;
+            }
+            return false;
+        }
+
+        // Клик/тап по ячейке
+        function handleCellClick(r, c) {
+            const val = grid[r][c];
+            if (val === 0) {
+                selectedCell = null;
+                render();
+                return;
+            }
+
+            if (!selectedCell) {
+                selectedCell = {r, c};
+                if (tg?.HapticFeedback) tg.HapticFeedback.selectionChanged();
+                render();
+                return;
+            }
+
+            if (selectedCell.r === r && selectedCell.c === c) {
+                selectedCell = null;
+                render();
+                return;
+            }
+
+            if (!mergeTiles(selectedCell.r, selectedCell.c, r, c)) {
+                selectedCell = {r, c};
+                if (tg?.HapticFeedback) tg.HapticFeedback.selectionChanged();
+                render();
+            }
+        }
+
+        // Начало перетаскивания (Pointer Events работают и для мышки, и для пальца)
+        function onPointerDown(e, r, c, tileEl) {
+            if (e.button !== undefined && e.button !== 0) return; // Только левая кнопка мыши или палец
+            dragSource = {r, c, el: tileEl};
+            dragStartX = e.clientX;
+            dragStartY = e.clientY;
+            isDragging = false;
+        }
+
+        window.addEventListener('pointermove', (e) => {
+            if (!dragSource) return;
+
+            const dx = e.clientX - dragStartX;
+            const dy = e.clientY - dragStartY;
+
+            // Начинаем перетаскивание, если сдвинули больше чем на 6 пикселей
+            if (!isDragging && Math.hypot(dx, dy) > 6) {
+                isDragging = true;
+                selectedCell = null;
+
+                const rect = dragSource.el.getBoundingClientRect();
+                dragGhost = dragSource.el.cloneNode(true);
+                dragGhost.classList.add('dragging-ghost');
+                dragGhost.style.width = rect.width + 'px';
+                dragGhost.style.height = rect.height + 'px';
+                document.body.appendChild(dragGhost);
+
+                // Делаем исходную плитку полупрозрачной
+                dragSource.el.style.opacity = '0.35';
+            }
+
+            if (isDragging && dragGhost) {
+                const w = dragGhost.offsetWidth;
+                const h = dragGhost.offsetHeight;
+                dragGhost.style.left = (e.clientX - w / 2) + 'px';
+                dragGhost.style.top = (e.clientY - h / 2) + 'px';
+
+                // Определяем, над какой ячейкой сейчас находится курсор/палец
+                const elemBelow = document.elementFromPoint(e.clientX, e.clientY);
+                const slotBelow = elemBelow ? elemBelow.closest('.slot') : null;
+
+                if (hoveredSlot && hoveredSlot !== slotBelow) {
+                    hoveredSlot.classList.remove('drag-over');
+                    hoveredSlot = null;
+                }
+
+                if (slotBelow) {
+                    const tr = parseInt(slotBelow.dataset.r);
+                    const tc = parseInt(slotBelow.dataset.c);
+                    const sourceVal = grid[dragSource.r][dragSource.c];
+                    const targetVal = grid[tr][tc];
+
+                    // Подсвечиваем цель, только если числа совпадают и это не та же клетка
+                    if ((tr !== dragSource.r || tc !== dragSource.c) && targetVal === sourceVal) {
+                        slotBelow.classList.add('drag-over');
+                        hoveredSlot = slotBelow;
+                    }
+                }
+            }
+        });
+
+        window.addEventListener('pointerup', (e) => {
+            if (!dragSource) return;
+
+            if (!isDragging) {
+                // Если не тащили, значит это был обычный клик
+                const {r, c} = dragSource;
+                cleanupDrag();
+                handleCellClick(r, c);
+                return;
+            }
+
+            // Проверяем, куда отпустили плитку
+            const elemBelow = document.elementFromPoint(e.clientX, e.clientY);
+            const slotBelow = elemBelow ? elemBelow.closest('.slot') : null;
+
+            let merged = false;
+            if (slotBelow) {
+                const tr = parseInt(slotBelow.dataset.r);
+                const tc = parseInt(slotBelow.dataset.c);
+                merged = mergeTiles(dragSource.r, dragSource.c, tr, tc);
+            }
+
+            cleanupDrag();
+            if (!merged) render();
+        });
+
+        window.addEventListener('pointercancel', () => {
+            if (dragSource) {
+                cleanupDrag();
+                render();
+            }
+        });
+
+        function cleanupDrag() {
+            if (dragGhost) {
+                dragGhost.remove();
+                dragGhost = null;
+            }
+            if (hoveredSlot) {
+                hoveredSlot.classList.remove('drag-over');
+                hoveredSlot = null;
+            }
+            dragSource = null;
+            isDragging = false;
+        }
+
+        function render() {
+            Array.from(boardEl.children).forEach(child => {
+                if (child.id !== 'game-over') child.remove();
+            });
+
+            for (let r = 0; r < size; r++) {
+                for (let c = 0; c < size; c++) {
+                    const slot = document.createElement('div');
+                    slot.className = 'slot';
+                    slot.dataset.r = r;
+                    slot.dataset.c = c;
+
+                    const val = grid[r][c];
+                    if (val > 0) {
+                        const tile = document.createElement('div');
+                        tile.className = `tile ${getColorClass(val)}`;
+                        tile.textContent = val;
+
+                        if (selectedCell && selectedCell.r === r && selectedCell.c === c) {
+                            tile.classList.add('selected');
+                        }
+                        if (poppedCells.includes(`${r}-${c}`)) {
+                            tile.classList.add('pop');
+                        }
+
+                        tile.addEventListener('pointerdown', (e) => onPointerDown(e, r, c, tile));
+                        slot.appendChild(tile);
+                    } else {
+                        slot.addEventListener('click', () => handleCellClick(r, c));
+                    }
+
+                    boardEl.appendChild(slot);
+                }
+            }
+            poppedCells = [];
+        }
+
+        function updateScore(add) {
+            score += add;
+            scoreEl.textContent = score;
+        }
+
+        function checkGameOver() {
+            if (getEmptyCount() > 0) return false;
+            let seen = new Set();
+            for (let r = 0; r < size; r++) {
+                for (let c = 0; c < size; c++) {
+                    if (seen.has(grid[r][c])) return false;
+                    seen.add(grid[r][c]);
+                }
+            }
+            return true;
+        }
+
+        initGame();
+    </script>
+</body>
+</html>
