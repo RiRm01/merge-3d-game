@@ -7,8 +7,8 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
-            --board-bg: rgba(24, 20, 42, 0.78);
-            --board-shadow: rgba(10, 8, 22, 0.85);
+            --board-bg: rgba(20, 18, 38, 0.78);
+            --board-shadow: rgba(8, 6, 20, 0.88);
             --text-color: #ffffff;
         }
         * {
@@ -20,8 +20,8 @@
         }
         body {
             margin: 0;
-            padding: 16px;
-            background: #1a1033;
+            padding: 14px;
+            background: #140c29;
             color: var(--text-color);
             display: flex;
             flex-direction: column;
@@ -54,60 +54,69 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
             gap: 8px;
         }
         .score-box {
             background: var(--board-bg);
             backdrop-filter: blur(8px);
             -webkit-backdrop-filter: blur(8px);
-            padding: 7px 12px;
+            padding: 6px 10px;
             border-radius: 14px;
             text-align: center;
             box-shadow: 0 5px 0 var(--board-shadow), 0 8px 16px rgba(0,0,0,0.45);
-            border: 1px solid rgba(255,255,255,0.16);
+            border: 1px solid rgba(255,255,255,0.18);
             flex: 1;
         }
-        .score-label { font-size: 10px; letter-spacing: 1px; opacity: 0.75; font-weight: 800; }
+        .score-label { font-size: 9.5px; letter-spacing: 0.8px; opacity: 0.8; font-weight: 800; }
         .score-val {
-            font-size: 20px;
+            font-size: 19px;
             font-weight: 900;
             text-shadow: 0 2px 4px rgba(0,0,0,0.6);
         }
         .controls {
             display: flex;
-            gap: 10px;
+            gap: 8px;
             margin-bottom: 10px;
             width: 100%;
         }
         button {
             flex: 1;
-            padding: 11px 8px;
+            padding: 10px 6px;
             border: none;
             border-radius: 12px;
-            background: rgba(44, 38, 72, 0.85);
+            background: rgba(40, 34, 68, 0.86);
             backdrop-filter: blur(6px);
             color: white;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 800;
             cursor: pointer;
-            box-shadow: 0 5px 0 #141026, 0 8px 12px rgba(0,0,0,0.35);
-            border-top: 1px solid rgba(255,255,255,0.22);
+            box-shadow: 0 5px 0 #120e24, 0 8px 12px rgba(0,0,0,0.35);
+            border-top: 1px solid rgba(255,255,255,0.24);
             transition: transform 0.1s, box-shadow 0.1s, background 0.2s;
         }
         button.active {
             background: linear-gradient(180deg, #ff7eb3 0%, #ff3d81 100%);
             box-shadow: 0 5px 0 #9e1447, 0 8px 16px rgba(255, 61, 129, 0.45);
         }
+        button.city-btn {
+            background: linear-gradient(180deg, #38bdf8 0%, #0284c7 100%);
+            box-shadow: 0 5px 0 #075985, 0 8px 16px rgba(2, 132, 199, 0.45);
+        }
+        button.locked {
+            opacity: 0.65;
+            background: rgba(30, 26, 50, 0.85);
+            font-size: 11.5px;
+        }
         button:active {
             transform: translateY(4px);
-            box-shadow: 0 1px 0 #141026;
+            box-shadow: 0 1px 0 #120e24;
         }
         .hint {
-            font-size: 12.5px;
-            font-weight: 600;
-            text-shadow: 0 2px 6px rgba(0,0,0,0.8);
-            margin-bottom: 12px;
+            font-size: 12px;
+            font-weight: 700;
+            text-shadow: 0 2px 6px rgba(0,0,0,0.85);
+            margin-bottom: 10px;
             text-align: center;
         }
         #board {
@@ -121,14 +130,14 @@
             display: grid;
             gap: 12px;
             position: relative;
-            border: 1px solid rgba(255, 255, 255, 0.18);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             box-shadow:
                 0 10px 0 var(--board-shadow),
                 0 22px 35px rgba(0, 0, 0, 0.65),
                 inset 0 2px 4px rgba(255, 255, 255, 0.15);
         }
         .slot {
-            background: rgba(14, 12, 28, 0.65);
+            background: rgba(12, 10, 26, 0.65);
             border-radius: 14px;
             box-shadow: inset 0 4px 8px rgba(0,0,0,0.65), 0 1px 0 rgba(255,255,255,0.08);
             position: relative;
@@ -195,6 +204,32 @@
             text-shadow: 0 2px 6px rgba(0,0,0,0.85), 0 0 12px rgba(255, 190, 11, 0.8);
             animation: floatUp 0.75s ease-out forwards;
         }
+
+        /* Уведомление об открытии Мегаполиса */
+        #unlock-toast {
+            position: fixed;
+            top: 18px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-120px);
+            background: linear-gradient(135deg, #00f5d4 0%, #00bbf9 50%, #9b5de5 100%);
+            color: #fff;
+            padding: 12px 20px;
+            border-radius: 16px;
+            font-weight: 900;
+            font-size: 14px;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.6), 0 0 20px rgba(0, 245, 212, 0.6);
+            border: 2px solid #ffffff;
+            z-index: 20000;
+            transition: transform 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            pointer-events: none;
+            width: 90%;
+            max-width: 340px;
+        }
+        #unlock-toast.show {
+            transform: translateX(-50%) translateY(0);
+        }
+
         .v-2 {
             background: linear-gradient(180deg, #5cc8ff 0%, #249be8 100%);
             box-shadow: 0 6px 0 #1468a3, 0 10px 15px rgba(0,0,0,0.35);
@@ -278,6 +313,7 @@
 </head>
 <body>
 
+    <div id="unlock-toast">🏙️ НОВАЯ ЛОКАЦИЯ ОТКРЫТА!<br>Добро пожаловать в Неоновый Мегаполис!</div>
     <canvas id="bg-canvas"></canvas>
 
     <div class="game-wrapper">
@@ -287,16 +323,17 @@
                 <div class="score-val" id="score">0</div>
             </div>
             <div class="score-box">
-                <div class="score-label">РЕКОРД</div>
+                <div class="score-label" id="best-label">РЕКОРД 4×4</div>
                 <div class="score-val" id="best-score">0</div>
             </div>
-            <button onclick="spawnManualTwo()" style="max-width: 58px;" title="Добавить 2">+2</button>
-            <button onclick="initGame()" style="max-width: 82px;">Заново</button>
+            <button onclick="spawnManualTwo()" style="max-width: 52px;" title="Добавить 2">+2</button>
+            <button onclick="initGame()" style="max-width: 78px;">Заново</button>
         </div>
 
         <div class="controls">
-            <button id="btn-3" onclick="setMode(3)">Режим 3×3</button>
-            <button id="btn-4" class="active" onclick="setMode(4)">Режим 4×4</button>
+            <button id="btn-3" onclick="setMode(3)">3×3</button>
+            <button id="btn-4" class="active" onclick="setMode(4)">4×4</button>
+            <button id="btn-world" onclick="toggleWorld()" style="flex: 1.5;">🔒 100 в 3×3</button>
         </div>
 
         <div class="hint">Перетаскивай или нажимай на одинаковые кубы</div>
@@ -316,6 +353,7 @@
             tg.ready();
         }
 
+        /* ================= ПЛАВНЫЙ 60 FPS ДВИЖОК ДВУХ 3D-МИРОВ ================= */
         const canvas = document.getElementById('bg-canvas');
         const ctx = canvas.getContext('2d');
         let cw = 0, ch = 0;
@@ -327,28 +365,14 @@
         window.addEventListener('resize', resizeCanvas);
         resizeCanvas();
 
-        let scrollX = 0;
-        let time = 0;
+        let currentWorld = 'valley'; // 'valley' или 'city'
+        let cityUnlocked = false;
+        let lastFrameTime = performance.now();
+        let totalTime = 0;
+        let worldDistance = 0;
 
-        const clouds = Array.from({ length: 6 }, (_, i) => ({
-            x: i * 260,
-            y: 50 + (i % 3) * 45,
-            scale: 0.7 + (i % 3) * 0.25,
-            speed: 0.15 + (i % 2) * 0.08
-        }));
-
-        const ambientSparks = Array.from({ length: 35 }, () => ({
-            x: Math.random() * 1200,
-            y: Math.random() * 900,
-            r: 1.5 + Math.random() * 2.5,
-            speedX: 0.3 + Math.random() * 0.6,
-            speedY: -0.2 - Math.random() * 0.5,
-            phase: Math.random() * Math.PI * 2,
-            color: ['#ffe066', '#ff8fab', '#72efdd', '#ffffff'][Math.floor(Math.random() * 4)]
-        }));
-
+        // Искры при слиянии кубов
         let mergeBursts = [];
-
         function spawnMergeBurst(screenX, screenY, color) {
             for (let i = 0; i < 18; i++) {
                 const angle = (Math.PI * 2 * i) / 18 + (Math.random() - 0.5) * 0.3;
@@ -365,160 +389,294 @@
             }
         }
 
-        function drawMountainLayer(offsetX, baseY, peakHeight, stepWidth, colorBody, colorSnow) {
-            const totalW = stepWidth * 6;
-            const startX = -((offsetX % totalW + totalW) % totalW) - stepWidth;
+        /* ---------- ДАННЫЕ ДЛЯ 1-Й ЛОКАЦИИ: СКАЗОЧНАЯ ДОЛИНА ---------- */
+        const valleyBackMountains = [];
+        const valleyFrontMountains = [];
+        const valleyMidObjects = [];
+        const valleyFrontObjects = [];
+        const valleyClouds = [];
+        const valleyFireflies = [];
 
-            for (let x = startX; x < cw + stepWidth * 2; x += stepWidth) {
-                const idx = Math.floor((x + offsetX) / stepWidth);
-                const hVar = Math.sin(idx * 1.7) * (peakHeight * 0.22);
-                const topX = x + stepWidth * 0.5;
-                const topY = baseY - peakHeight - hVar;
+        function createMountain(x, isFront) {
+            return {
+                x: x,
+                w: isFront ? (160 + Math.random() * 140) : (210 + Math.random() * 170),
+                h: isFront ? (115 + Math.random() * 85) : (165 + Math.random() * 110),
+                ridgeOffset: (Math.random() - 0.5) * 0.25,
+                hasSnow: Math.random() > 0.15
+            };
+        }
 
-                ctx.beginPath();
-                ctx.moveTo(x - 20, ch);
-                ctx.lineTo(x - 20, baseY);
-                ctx.lineTo(topX, topY);
-                ctx.lineTo(x + stepWidth + 20, baseY);
-                ctx.lineTo(x + stepWidth + 20, ch);
-                ctx.closePath();
-                ctx.fillStyle = colorBody;
-                ctx.fill();
+        function createValleyProp(x, isFront) {
+            const types = isFront ? ['pine', 'broadleaf', 'bush', 'flowers'] : ['pine', 'broadleaf', 'rock'];
+            const type = types[Math.floor(Math.random() * types.length)];
+            const palettes = [
+                { light: '#38b000', dark: '#007200' },
+                { light: '#2ec4b6', dark: '#016fb9' },
+                { light: '#70e000', dark: '#38b000' },
+                { light: '#ff9f1c', dark: '#e71d36' }, // яркие осенне-сказочные деревья
+                { light: '#ff70a6', dark: '#c9184a' }  // цветущая сакура
+            ];
+            const pal = palettes[Math.floor(Math.random() * palettes.length)];
+            return {
+                x: x,
+                type: type,
+                scale: isFront ? (0.85 + Math.random() * 0.55) : (0.65 + Math.random() * 0.45),
+                phase: Math.random() * Math.PI * 2,
+                swaySpeed: 1.4 + Math.random() * 0.9,
+                palette: pal,
+                flowerColor: ['#ffbe0b', '#fb5607', '#ff006e', '#8338ec', '#3a86ff'][Math.floor(Math.random() * 5)]
+            };
+        }
 
-                ctx.beginPath();
-                ctx.moveTo(topX, topY);
-                ctx.lineTo(x + stepWidth + 20, baseY);
-                ctx.lineTo(topX + stepWidth * 0.1, baseY);
-                ctx.closePath();
-                ctx.fillStyle = 'rgba(15, 10, 35, 0.25)';
-                ctx.fill();
+        // Инициализация объектов долины без повторов и стыков
+        let mx = -200;
+        while (mx < 1600) {
+            const m = createMountain(mx, false);
+            valleyBackMountains.push(m);
+            mx += m.w * 0.68;
+        }
+        mx = -200;
+        while (mx < 1600) {
+            const m = createMountain(mx, true);
+            valleyFrontMountains.push(m);
+            mx += m.w * 0.65;
+        }
+        let px = -100;
+        while (px < 1600) {
+            valleyMidObjects.push(createValleyProp(px, false));
+            px += 42 + Math.random() * 48;
+        }
+        px = -100;
+        while (px < 1600) {
+            valleyFrontObjects.push(createValleyProp(px, true));
+            px += 55 + Math.random() * 65;
+        }
+        for (let i = 0; i < 7; i++) {
+            valleyClouds.push({
+                x: i * 240 + Math.random() * 80,
+                y: 45 + Math.random() * 110,
+                scale: 0.65 + Math.random() * 0.45,
+                speed: 12 + Math.random() * 10
+            });
+        }
+        for (let i = 0; i < 40; i++) {
+            valleyFireflies.push({
+                x: Math.random() * 1400,
+                y: Math.random() * 900,
+                r: 1.5 + Math.random() * 2.5,
+                vx: -(18 + Math.random() * 28),
+                vy: -(8 + Math.random() * 18),
+                phase: Math.random() * Math.PI * 2,
+                color: ['#ffe066', '#ff8fab', '#72efdd', '#ffffff'][Math.floor(Math.random() * 4)]
+            });
+        }
 
-                if (colorSnow) {
-                    const snowH = (baseY - topY) * 0.36;
-                    ctx.beginPath();
-                    ctx.moveTo(topX, topY);
-                    ctx.lineTo(topX - stepWidth * 0.18, topY + snowH);
-                    ctx.lineTo(topX - stepWidth * 0.05, topY + snowH * 0.78);
-                    ctx.lineTo(topX + stepWidth * 0.06, topY + snowH * 1.05);
-                    ctx.lineTo(topX + stepWidth * 0.19, topY + snowH * 0.85);
-                    ctx.closePath();
-                    ctx.fillStyle = colorSnow;
-                    ctx.fill();
+        /* ---------- ДАННЫЕ ДЛЯ 2-Й ЛОКАЦИИ: НЕОНОВЫЙ 3D-МЕГАПОЛИС ---------- */
+        const cityFarTowers = [];
+        const cityBuildings = [];
+        const cityCars = [];
+        let lastBrandIndex = -1;
+
+        const shopCatalog = [
+            { name: 'MEGA MALL', category: 'mall', signBg: '#ff006e', text: '#ffffff', wall: '#2b2d42', side: '#1a1b29', accent: '#ffbe0b' },
+            { name: 'COFFEE 24', category: 'cafe', signBg: '#ff9f1c', text: '#1a1025', wall: '#3d2c2e', side: '#241819', accent: '#ffbf69' },
+            { name: 'FASHION', category: 'clothes', signBg: '#9b5de5', text: '#ffffff', wall: '#312244', side: '#1e142b', accent: '#f15bb5' },
+            { name: 'FRESH FOOD', category: 'market', signBg: '#00f5d4', text: '#0b132b', wall: '#1d3557', side: '#112036', accent: '#38b000' },
+            { name: 'CYBER TECH', category: 'tech', signBg: '#00bbf9', text: '#ffffff', wall: '#22223b', side: '#141424', accent: '#4cc9f0' },
+            { name: 'BURGER LAB', category: 'cafe', signBg: '#fb5607', text: '#ffffff', wall: '#372549', side: '#21152c', accent: '#ffbe0b' },
+            { name: 'STYLE CLUB', category: 'clothes', signBg: '#f15bb5', text: '#ffffff', wall: '#2d1e3e', side: '#1b1126', accent: '#fee440' },
+            { name: 'GRAND PLAZA', category: 'mall', signBg: '#fee440', text: '#140c29', wall: '#264653', side: '#162a33', accent: '#e76f51' },
+            { name: 'SWEET BAKERY', category: 'cafe', signBg: '#ff70a6', text: '#ffffff', wall: '#4a2c40', side: '#2c1926', accent: '#ffd6e0' },
+            { name: 'SUPERMART', category: 'market', signBg: '#38b000', text: '#ffffff', wall: '#1b4332', side: '#0f261c', accent: '#9ef01a' },
+            { name: 'ARCADE 3D', category: 'mall', signBg: '#8338ec', text: '#00f5d4', wall: '#241734', side: '#140c1f', accent: '#ff006e' },
+            { name: 'DENIM & CO', category: 'clothes', signBg: '#3a86ff', text: '#ffffff', wall: '#283655', side: '#172033', accent: '#a2d2ff' }
+        ];
+
+        function pickNextBrand() {
+            let idx;
+            do {
+                idx = Math.floor(Math.random() * shopCatalog.length);
+            } while (idx === lastBrandIndex);
+            lastBrandIndex = idx;
+            return shopCatalog[idx];
+        }
+
+        function createFarTower(x) {
+            return {
+                x: x,
+                w: 55 + Math.random() * 55,
+                h: 180 + Math.random() * 190,
+                hasSpire: Math.random() > 0.45,
+                color: ['#1e1b4b', '#2e1065', '#172554', '#311042'][Math.floor(Math.random() * 4)],
+                glow: ['#38bdf8', '#f472b6', '#a78bfa', '#34d399'][Math.floor(Math.random() * 4)]
+            };
+        }
+
+        function createCityBuilding(x) {
+            const brand = pickNextBrand();
+            const isMall = brand.category === 'mall';
+            const w = isMall ? (165 + Math.random() * 55) : (115 + Math.random() * 45);
+            const h = isMall ? (190 + Math.random() * 75) : (135 + Math.random() * 85);
+            const cols = Math.floor((w - 24) / 22);
+            const rows = Math.floor((h - 65) / 26);
+            const windowStates = [];
+            for (let r = 0; r < rows; r++) {
+                for (let c = 0; c < cols; c++) {
+                    windowStates.push(Math.random() > 0.32);
                 }
             }
+            return {
+                x: x,
+                w: w,
+                h: h,
+                depth: 18 + Math.random() * 12,
+                brand: brand,
+                cols: cols,
+                rows: rows,
+                windowStates: windowStates,
+                hasAwning: brand.category === 'cafe' || brand.category === 'market',
+                hasRooftopSign: isMall || Math.random() > 0.55
+            };
         }
 
-        function drawTree(x, baseY, height, swayAngle, colorLight, colorDark) {
-            ctx.save();
-            ctx.translate(x, baseY);
-            ctx.rotate(swayAngle);
-
-            ctx.fillStyle = '#2b192e';
-            ctx.fillRect(-height * 0.06, -height * 0.18, height * 0.12, height * 0.2);
-
-            for (let t = 0; t < 3; t++) {
-                const tierBottom = -height * (0.14 + t * 0.24);
-                const tierTop = tierBottom - height * 0.42;
-                const halfW = height * (0.34 - t * 0.07);
-
-                ctx.beginPath();
-                ctx.moveTo(0, tierTop);
-                ctx.lineTo(-halfW, tierBottom);
-                ctx.lineTo(0, tierBottom + height * 0.04);
-                ctx.closePath();
-                ctx.fillStyle = colorLight;
-                ctx.fill();
-
-                ctx.beginPath();
-                ctx.moveTo(0, tierTop);
-                ctx.lineTo(halfW, tierBottom);
-                ctx.lineTo(0, tierBottom + height * 0.04);
-                ctx.closePath();
-                ctx.fillStyle = colorDark;
-                ctx.fill();
-            }
-            ctx.restore();
+        function createCar(x, lane) {
+            const carColors = [
+                { body: '#ff006e', roof: '#ff70a6' },
+                { body: '#00bbf9', roof: '#90e0ef' },
+                { body: '#fee440', roof: '#fff3b0' },
+                { body: '#9b5de5', roof: '#c77dff' },
+                { body: '#00f5d4', roof: '#9ef01a' },
+                { body: '#fb5607', roof: '#ffbe0b' }
+            ];
+            const col = carColors[Math.floor(Math.random() * carColors.length)];
+            return {
+                x: x,
+                lane: lane, // 0 = верхняя полоса (едет влево), 1 = нижняя полоса (едет вправо)
+                w: 44 + Math.random() * 14,
+                h: 18,
+                speed: lane === 0 ? -(115 + Math.random() * 45) : (135 + Math.random() * 55),
+                color: col,
+                isSport: Math.random() > 0.5
+            };
         }
 
-        function drawForestLayer(offsetX, baseY, spacing, minH, maxH, swaySpeed, colorLight, colorDark, groundColor) {
-            ctx.fillStyle = groundColor;
-            ctx.fillRect(0, baseY - 6, cw, ch - baseY + 10);
-
-            const totalW = spacing * 12;
-            const startX = -((offsetX % totalW + totalW) % totalW) - spacing;
-
-            for (let x = startX; x < cw + spacing * 2; x += spacing) {
-                const idx = Math.floor((x + offsetX) / spacing);
-                const h = minH + ((Math.sin(idx * 2.3) + 1) * 0.5) * (maxH - minH);
-                const sway = Math.sin(time * swaySpeed + idx * 1.1) * 0.065;
-                drawTree(x, baseY, h, sway, colorLight, colorDark);
-            }
+        // Инициализация объектов города
+        let tx = -100;
+        while (tx < 1600) {
+            const t = createFarTower(tx);
+            cityFarTowers.push(t);
+            tx += t.w + 8 + Math.random() * 18;
+        }
+        let bx = -150;
+        while (bx < 1600) {
+            const b = createCityBuilding(bx);
+            cityBuildings.push(b);
+            bx += b.w + b.depth + 14 + Math.random() * 22;
+        }
+        for (let i = 0; i < 6; i++) {
+            cityCars.push(createCar(i * 260, i % 2));
         }
 
-        function renderBackground() {
-            time += 0.03;
-            scrollX += 0.75;
-
+        /* ---------- ОТРИСОВКА 1-Й ЛОКАЦИИ: ДОЛИНА ---------- */
+        function renderValley(dt) {
+            // 1. Яркое многоцветное небо
             const skyGrad = ctx.createLinearGradient(0, 0, 0, ch);
-            skyGrad.addColorStop(0, '#3a1c71');
-            skyGrad.addColorStop(0.38, '#d76d77');
-            skyGrad.addColorStop(0.68, '#ffaf7b');
-            skyGrad.addColorStop(1, '#241438');
+            skyGrad.addColorStop(0, '#2b1055');
+            skyGrad.addColorStop(0.32, '#c850c0');
+            skyGrad.addColorStop(0.62, '#ffcc70');
+            skyGrad.addColorStop(1, '#1b4332');
             ctx.fillStyle = skyGrad;
             ctx.fillRect(0, 0, cw, ch);
 
-            const sunX = cw * 0.5;
-            const sunY = ch * 0.44;
-            const sunGlow = ctx.createRadialGradient(sunX, sunY, 10, sunX, sunY, 170);
-            sunGlow.addColorStop(0, 'rgba(255, 250, 210, 0.95)');
-            sunGlow.addColorStop(0.35, 'rgba(255, 200, 120, 0.45)');
-            sunGlow.addColorStop(1, 'rgba(255, 150, 130, 0)');
+            // Солнце с мягким свечением
+            const sunX = cw * 0.52;
+            const sunY = ch * 0.38;
+            const sunGlow = ctx.createRadialGradient(sunX, sunY, 12, sunX, sunY, 190);
+            sunGlow.addColorStop(0, 'rgba(255, 252, 220, 0.98)');
+            sunGlow.addColorStop(0.35, 'rgba(255, 210, 110, 0.5)');
+            sunGlow.addColorStop(1, 'rgba(255, 140, 120, 0)');
             ctx.fillStyle = sunGlow;
             ctx.beginPath();
-            ctx.arc(sunX, sunY, 170, 0, Math.PI * 2);
+            ctx.arc(sunX, sunY, 190, 0, Math.PI * 2);
             ctx.fill();
 
-            clouds.forEach(c => {
-                c.x -= c.speed;
-                if (c.x < -180) c.x = cw + 180;
-                ctx.fillStyle = 'rgba(255, 230, 240, 0.25)';
+            // Облака
+            valleyClouds.forEach(c => {
+                c.x -= c.speed * dt;
+                if (c.x < -160) {
+                    c.x = cw + 160;
+                    c.y = 40 + Math.random() * 115;
+                }
+                ctx.fillStyle = 'rgba(255, 240, 250, 0.32)';
                 ctx.beginPath();
-                ctx.arc(c.x, c.y, 26 * c.scale, 0, Math.PI * 2);
-                ctx.arc(c.x + 24 * c.scale, c.y - 8 * c.scale, 32 * c.scale, 0, Math.PI * 2);
-                ctx.arc(c.x + 52 * c.scale, c.y, 24 * c.scale, 0, Math.PI * 2);
+                ctx.arc(c.x, c.y, 24 * c.scale, 0, Math.PI * 2);
+                ctx.arc(c.x + 22 * c.scale, c.y - 8 * c.scale, 30 * c.scale, 0, Math.PI * 2);
+                ctx.arc(c.x + 48 * c.scale, c.y, 22 * c.scale, 0, Math.PI * 2);
                 ctx.fill();
             });
 
-            drawMountainLayer(scrollX * 0.22, ch * 0.62, 165, 220, '#6a4c93', '#fff0f5');
-            drawMountainLayer(scrollX * 0.42, ch * 0.70, 130, 175, '#4a306d', '#ffd6e7');
-            drawForestLayer(scrollX * 0.75, ch * 0.77, 46, 52, 78, 1.3, '#2d6a4f', '#1b4332', '#1b4332');
-
-            const riverY = ch * 0.77;
-            const riverH = ch * 0.09;
-            const riverGrad = ctx.createLinearGradient(0, riverY, 0, riverY + riverH);
-            riverGrad.addColorStop(0, '#48cae4');
-            riverGrad.addColorStop(0.5, '#90e0ef');
-            riverGrad.addColorStop(1, '#0096c7');
-            ctx.fillStyle = riverGrad;
-            ctx.fillRect(0, riverY, cw, riverH);
-
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.45)';
-            const waveStep = 90;
-            const waveStart = -((scrollX * 1.1) % waveStep);
-            for (let wx = waveStart; wx < cw; wx += waveStep) {
-                ctx.fillRect(wx, riverY + riverH * 0.3, 38, 3);
-                ctx.fillRect(wx + 25, riverY + riverH * 0.68, 26, 2.5);
+            // 2. Дальние горы (плавный поток без стыков)
+            const backBaseY = ch * 0.62;
+            valleyBackMountains.forEach(m => m.x -= 16 * dt);
+            if (valleyBackMountains[0].x + valleyBackMountains[0].w < -150) {
+                valleyBackMountains.shift();
+                const last = valleyBackMountains[valleyBackMountains.length - 1];
+                valleyBackMountains.push(createMountain(last.x + last.w * 0.68, false));
             }
+            valleyBackMountains.forEach(m => drawSingleMountain(m, backBaseY, '#6d597a', '#4a3b59', '#fff0f6'));
 
-            drawForestLayer(scrollX * 1.35, ch * 0.91, 68, 75, 115, 1.8, '#1b4332', '#081c15', '#0d1b1e');
+            // 3. Ближние горы
+            const frontBaseY = ch * 0.69;
+            valleyFrontMountains.forEach(m => m.x -= 30 * dt);
+            if (valleyFrontMountains[0].x + valleyFrontMountains[0].w < -150) {
+                valleyFrontMountains.shift();
+                const last = valleyFrontMountains[valleyFrontMountains.length - 1];
+                valleyFrontMountains.push(createMountain(last.x + last.w * 0.65, true));
+            }
+            valleyFrontMountains.forEach(m => drawSingleMountain(m, frontBaseY, '#5e548e', '#3c3266', '#ffd6e7'));
 
-            ambientSparks.forEach(s => {
-                s.x -= s.speedX;
-                s.y += s.speedY + Math.sin(time + s.phase) * 0.25;
-                if (s.x < -10) s.x = cw + 10;
-                if (s.y < -10) s.y = ch + 10;
+            // 4. Неровные волнистые холмы среднего плана (вместо прямой линии)
+            drawWavyHill(ch * 0.72, 16, 0.008, worldDistance * 0.55, '#40916c');
 
-                const alpha = 0.45 + 0.55 * Math.sin(time * 2 + s.phase);
+            // 5. Деревья и камни среднего плана
+            valleyMidObjects.forEach(obj => obj.x -= 48 * dt);
+            if (valleyMidObjects[0].x < -120) {
+                valleyMidObjects.shift();
+                const last = valleyMidObjects[valleyMidObjects.length - 1];
+                valleyMidObjects.push(createValleyProp(last.x + 42 + Math.random() * 48, false));
+            }
+            valleyMidObjects.forEach(obj => {
+                const hillY = getHillY(obj.x, ch * 0.72, 16, 0.008, worldDistance * 0.55);
+                drawValleyProp(obj, hillY + 4);
+            });
+
+            // 6. Извилистая сверкающая река
+            drawWavyRiver(ch * 0.77, ch * 0.085, worldDistance * 0.85);
+
+            // 7. Неровный передний холм
+            drawWavyHill(ch * 0.85, 18, 0.006, worldDistance * 1.15, '#1b4332');
+
+            // 8. Крупные яркие деревья, кусты и цветы переднего плана
+            valleyFrontObjects.forEach(obj => obj.x -= 82 * dt);
+            if (valleyFrontObjects[0].x < -140) {
+                valleyFrontObjects.shift();
+                const last = valleyFrontObjects[valleyFrontObjects.length - 1];
+                valleyFrontObjects.push(createValleyProp(last.x + 55 + Math.random() * 65, true));
+            }
+            valleyFrontObjects.forEach(obj => {
+                const hillY = getHillY(obj.x, ch * 0.85, 18, 0.006, worldDistance * 1.15);
+                drawValleyProp(obj, hillY + 12);
+            });
+
+            // 9. Парящие разноцветные огоньки
+            valleyFireflies.forEach(s => {
+                s.x += s.vx * dt;
+                s.y += (s.vy + Math.sin(totalTime * 2 + s.phase) * 14) * dt;
+                if (s.x < -15) s.x = cw + 15;
+                if (s.y < -15) s.y = ch + 15;
+
+                const alpha = 0.45 + 0.55 * Math.sin(totalTime * 3 + s.phase);
                 ctx.globalAlpha = alpha;
                 ctx.fillStyle = s.color;
                 ctx.beginPath();
@@ -526,7 +684,398 @@
                 ctx.fill();
             });
             ctx.globalAlpha = 1;
+        }
 
+        function getHillY(x, baseY, amp, freq, phase) {
+            return baseY + Math.sin(x * freq + phase) * amp + Math.cos(x * freq * 1.9 + phase * 0.7) * (amp * 0.45);
+        }
+
+        function drawWavyHill(baseY, amp, freq, phase, color) {
+            ctx.beginPath();
+            ctx.moveTo(0, ch);
+            for (let x = 0; x <= cw + 20; x += 20) {
+                ctx.lineTo(x, getHillY(x, baseY, amp, freq, phase));
+            }
+            ctx.lineTo(cw, ch);
+            ctx.closePath();
+            ctx.fillStyle = color;
+            ctx.fill();
+        }
+
+        function drawWavyRiver(baseY, height, phase) {
+            ctx.beginPath();
+            for (let x = 0; x <= cw + 20; x += 20) {
+                const y = getHillY(x, baseY, 10, 0.007, phase);
+                if (x === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            for (let x = cw + 20; x >= 0; x -= 20) {
+                const y = getHillY(x, baseY + height, 12, 0.006, phase * 1.1);
+                ctx.lineTo(x, y);
+            }
+            ctx.closePath();
+
+            const grad = ctx.createLinearGradient(0, baseY - 10, 0, baseY + height + 10);
+            grad.addColorStop(0, '#00f5d4');
+            grad.addColorStop(0.5, '#00bbf9');
+            grad.addColorStop(1, '#3a86ff');
+            ctx.fillStyle = grad;
+            ctx.fill();
+
+            // Живые блики воды
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.55)';
+            for (let i = 0; i < 8; i++) {
+                const wx = cw - (((phase * 95 + i * 190) % (cw + 120)) - 60);
+                const wy = getHillY(wx, baseY + height * 0.45, 10, 0.007, phase);
+                ctx.beginPath();
+                ctx.roundRect(wx, wy, 34, 3.5, 2);
+                ctx.fill();
+            }
+        }
+
+        function drawSingleMountain(m, baseY, lightColor, darkColor, snowColor) {
+            const topX = m.x + m.w * (0.5 + m.ridgeOffset);
+            const topY = baseY - m.h;
+
+            // Левый освещенный склон
+            ctx.beginPath();
+            ctx.moveTo(m.x, ch);
+            ctx.lineTo(m.x, baseY + 15);
+            ctx.lineTo(topX, topY);
+            ctx.lineTo(topX, ch);
+            ctx.closePath();
+            ctx.fillStyle = lightColor;
+            ctx.fill();
+
+            // Правый теневой склон (3D-грань)
+            ctx.beginPath();
+            ctx.moveTo(topX, topY);
+            ctx.lineTo(m.x + m.w, baseY + 15);
+            ctx.lineTo(m.x + m.w, ch);
+            ctx.lineTo(topX, ch);
+            ctx.closePath();
+            ctx.fillStyle = darkColor;
+            ctx.fill();
+
+            if (m.hasSnow) {
+                const snowH = m.h * 0.34;
+                ctx.beginPath();
+                ctx.moveTo(topX, topY);
+                ctx.lineTo(topX - m.w * 0.16, topY + snowH);
+                ctx.lineTo(topX - m.w * 0.04, topY + snowH * 0.8);
+                ctx.lineTo(topX + m.w * 0.06, topY + snowH * 1.05);
+                ctx.lineTo(topX + m.w * 0.17, topY + snowH * 0.82);
+                ctx.closePath();
+                ctx.fillStyle = snowColor;
+                ctx.fill();
+            }
+        }
+
+        function drawValleyProp(obj, y) {
+            const sway = Math.sin(totalTime * obj.swaySpeed + obj.phase) * 0.06;
+            ctx.save();
+            ctx.translate(obj.x, y);
+            ctx.scale(obj.scale, obj.scale);
+
+            if (obj.type === 'pine') {
+                ctx.rotate(sway);
+                ctx.fillStyle = '#3d251e';
+                ctx.fillRect(-5, -18, 10, 20);
+                for (let t = 0; t < 3; t++) {
+                    const bY = -14 - t * 22;
+                    const tY = bY - 38;
+                    const hw = 30 - t * 6;
+                    ctx.beginPath();
+                    ctx.moveTo(0, tY);
+                    ctx.lineTo(-hw, bY);
+                    ctx.lineTo(0, bY + 4);
+                    ctx.closePath();
+                    ctx.fillStyle = obj.palette.light;
+                    ctx.fill();
+
+                    ctx.beginPath();
+                    ctx.moveTo(0, tY);
+                    ctx.lineTo(hw, bY);
+                    ctx.lineTo(0, bY + 4);
+                    ctx.closePath();
+                    ctx.fillStyle = obj.palette.dark;
+                    ctx.fill();
+                }
+            } else if (obj.type === 'broadleaf') {
+                ctx.rotate(sway * 0.85);
+                ctx.fillStyle = '#4a2c2a';
+                ctx.fillRect(-5, -28, 10, 30);
+                // Пышная 3D-крона
+                ctx.fillStyle = obj.palette.dark;
+                ctx.beginPath();
+                ctx.arc(8, -46, 24, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = obj.palette.light;
+                ctx.beginPath();
+                ctx.arc(-6, -48, 25, 0, Math.PI * 2);
+                ctx.arc(2, -62, 22, 0, Math.PI * 2);
+                ctx.fill();
+            } else if (obj.type === 'bush') {
+                ctx.rotate(sway * 0.5);
+                ctx.fillStyle = obj.palette.dark;
+                ctx.beginPath();
+                ctx.arc(10, -10, 15, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = obj.palette.light;
+                ctx.beginPath();
+                ctx.arc(-6, -12, 16, 0, Math.PI * 2);
+                ctx.arc(3, -18, 14, 0, Math.PI * 2);
+                ctx.fill();
+            } else if (obj.type === 'flowers') {
+                for (let f = -12; f <= 12; f += 12) {
+                    ctx.fillStyle = '#38b000';
+                    ctx.fillRect(f - 1.5, -14, 3, 14);
+                    ctx.fillStyle = obj.flowerColor;
+                    ctx.beginPath();
+                    ctx.arc(f, -16, 5.5, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.fillStyle = '#fff3b0';
+                    ctx.beginPath();
+                    ctx.arc(f, -16, 2, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            } else if (obj.type === 'rock') {
+                ctx.fillStyle = '#6c757d';
+                ctx.beginPath();
+                ctx.moveTo(-18, 0);
+                ctx.lineTo(-10, -18);
+                ctx.lineTo(6, -22);
+                ctx.lineTo(20, 0);
+                ctx.closePath();
+                ctx.fill();
+                ctx.fillStyle = '#adb5bd';
+                ctx.beginPath();
+                ctx.moveTo(-18, 0);
+                ctx.lineTo(-10, -18);
+                ctx.lineTo(2, -16);
+                ctx.lineTo(-2, 0);
+                ctx.closePath();
+                ctx.fill();
+            }
+            ctx.restore();
+        }
+
+        /* ---------- ОТРИСОВКА 2-Й ЛОКАЦИИ: НЕОНОВЫЙ 3D-МЕГАПОЛИС ---------- */
+        function renderCity(dt) {
+            // 1. Яркое неоново-закатное небо мегаполиса
+            const skyGrad = ctx.createLinearGradient(0, 0, 0, ch);
+            skyGrad.addColorStop(0, '#0f0c29');
+            skyGrad.addColorStop(0.35, '#302b63');
+            skyGrad.addColorStop(0.65, '#ff4d6d');
+            skyGrad.addColorStop(1, '#1a1423');
+            ctx.fillStyle = skyGrad;
+            ctx.fillRect(0, 0, cw, ch);
+
+            // Неоновое солнце на горизонте
+            const sunX = cw * 0.5;
+            const sunY = ch * 0.45;
+            const sunGrad = ctx.createLinearGradient(0, sunY - 95, 0, sunY + 95);
+            sunGrad.addColorStop(0, '#fee440');
+            sunGrad.addColorStop(0.5, '#ff006e');
+            sunGrad.addColorStop(1, '#8338ec');
+            ctx.fillStyle = sunGrad;
+            ctx.beginPath();
+            ctx.arc(sunX, sunY, 95, 0, Math.PI * 2);
+            ctx.fill();
+
+            // 2. Дальний силуэт небоскрёбов с антеннами
+            const horizonY = ch * 0.76;
+            cityFarTowers.forEach(t => t.x -= 22 * dt);
+            if (cityFarTowers[0].x + cityFarTowers[0].w < -80) {
+                cityFarTowers.shift();
+                const last = cityFarTowers[cityFarTowers.length - 1];
+                cityFarTowers.push(createFarTower(last.x + last.w + 8 + Math.random() * 18));
+            }
+            cityFarTowers.forEach(t => {
+                const topY = horizonY - t.h;
+                ctx.fillStyle = t.color;
+                ctx.fillRect(t.x, topY, t.w, t.h);
+                // Неоновая окантовка крыши
+                ctx.fillStyle = t.glow;
+                ctx.fillRect(t.x, topY, t.w, 3);
+                if (t.hasSpire) {
+                    ctx.fillRect(t.x + t.w * 0.5 - 1.5, topY - 26, 3, 26);
+                    ctx.beginPath();
+                    ctx.arc(t.x + t.w * 0.5, topY - 28, 3.5, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            });
+
+            // 3. Передний план: 3D-здания, магазины, кафе и торговые центры
+            const sidewalkY = ch * 0.79;
+            cityBuildings.forEach(b => b.x -= 68 * dt);
+            if (cityBuildings[0].x + cityBuildings[0].w + cityBuildings[0].depth < -100) {
+                cityBuildings.shift();
+                const last = cityBuildings[cityBuildings.length - 1];
+                cityBuildings.push(createCityBuilding(last.x + last.w + last.depth + 14 + Math.random() * 22));
+            }
+            cityBuildings.forEach(b => draw3DBuilding(b, sidewalkY));
+
+            // 4. Тротуар и современное шоссе
+            ctx.fillStyle = '#3a3f58';
+            ctx.fillRect(0, sidewalkY, cw, 12);
+            ctx.fillStyle = '#181a24';
+            ctx.fillRect(0, sidewalkY + 12, cw, ch - sidewalkY);
+
+            // Разметка дороги (бежит влево)
+            const roadCenterY = sidewalkY + (ch - sidewalkY) * 0.52;
+            ctx.fillStyle = '#fee440';
+            const dashStep = 75;
+            const dashOffset = -((worldDistance * 95) % dashStep);
+            for (let dx = dashOffset; dx < cw; dx += dashStep) {
+                ctx.fillRect(dx, roadCenterY, 38, 4);
+            }
+
+            // 5. Едущие 3D-машины со светом фар
+            cityCars.forEach(car => {
+                car.x += car.speed * dt;
+                if (car.speed < 0 && car.x < -120) {
+                    Object.assign(car, createCar(cw + 80 + Math.random() * 140, 0));
+                } else if (car.speed > 0 && car.x > cw + 120) {
+                    Object.assign(car, createCar(-120 - Math.random() * 140, 1));
+                }
+                const carY = car.lane === 0 ? (roadCenterY - 12) : (roadCenterY + 26);
+                draw3DCar(car, carY);
+            });
+        }
+
+        function draw3DBuilding(b, groundY) {
+            const topY = groundY - b.h;
+
+            // Боковая 3D-грань здания (справа)
+            ctx.beginPath();
+            ctx.moveTo(b.x + b.w, topY);
+            ctx.lineTo(b.x + b.w + b.depth, topY + 10);
+            ctx.lineTo(b.x + b.w + b.depth, groundY);
+            ctx.lineTo(b.x + b.w, groundY);
+            ctx.closePath();
+            ctx.fillStyle = b.brand.side;
+            ctx.fill();
+
+            // Лицевой фасад здания
+            ctx.fillStyle = b.brand.wall;
+            ctx.fillRect(b.x, topY, b.w, b.h);
+
+            // Неоновая подсветка контура крыши
+            ctx.fillStyle = b.brand.accent;
+            ctx.fillRect(b.x, topY, b.w, 4);
+
+            // Светящиеся окна
+            const winW = 12;
+            const winH = 15;
+            const startX = b.x + (b.w - b.cols * 22 + 10) * 0.5;
+            let idx = 0;
+            for (let r = 0; r < b.rows; r++) {
+                for (let c = 0; c < b.cols; c++) {
+                    const lit = b.windowStates[idx++];
+                    ctx.fillStyle = lit ? '#ffe66d' : 'rgba(10, 12, 24, 0.65)';
+                    ctx.fillRect(startX + c * 22, topY + 18 + r * 26, winW, winH);
+                }
+            }
+
+            // Витрина первого этажа
+            ctx.fillStyle = '#4cc9f0';
+            ctx.globalAlpha = 0.75;
+            ctx.fillRect(b.x + 12, groundY - 34, b.w - 24, 34);
+            ctx.globalAlpha = 1;
+
+            // Полосатый навес для кафе и магазинов
+            if (b.hasAwning) {
+                const stripes = 6;
+                const sw = (b.w - 16) / stripes;
+                for (let s = 0; s < stripes; s++) {
+                    ctx.fillStyle = s % 2 === 0 ? b.brand.signBg : '#ffffff';
+                    ctx.fillRect(b.x + 8 + s * sw, groundY - 40, sw, 9);
+                }
+            }
+
+            // Яркая вывеска с названием магазина / кафе / ТЦ
+            const signW = b.w - 14;
+            const signH = 22;
+            const signX = b.x + 7;
+            const signY = b.hasRooftopSign ? (topY - 24) : (groundY - 64);
+
+            ctx.save();
+            ctx.shadowColor = b.brand.signBg;
+            ctx.shadowBlur = 12;
+            ctx.fillStyle = b.brand.signBg;
+            ctx.beginPath();
+            ctx.roundRect(signX, signY, signW, signH, 6);
+            ctx.fill();
+            ctx.restore();
+
+            ctx.fillStyle = b.brand.text;
+            ctx.font = '900 10.5px "Segoe UI", Arial, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(b.brand.name, signX + signW * 0.5, signY + signH * 0.5 + 0.5);
+        }
+
+        function draw3DCar(car, y) {
+            const dir = car.speed > 0 ? 1 : -1;
+            ctx.save();
+            ctx.translate(car.x, y);
+
+            // Луч света фар
+            const beamGrad = ctx.createLinearGradient(0, 0, dir * 75, 0);
+            beamGrad.addColorStop(0, 'rgba(255, 250, 190, 0.65)');
+            beamGrad.addColorStop(1, 'rgba(255, 250, 190, 0)');
+            ctx.fillStyle = beamGrad;
+            ctx.beginPath();
+            ctx.moveTo(dir * (car.w * 0.5), -4);
+            ctx.lineTo(dir * (car.w * 0.5 + 75), -14);
+            ctx.lineTo(dir * (car.w * 0.5 + 75), 8);
+            ctx.lineTo(dir * (car.w * 0.5), 4);
+            ctx.closePath();
+            ctx.fill();
+
+            // Кузов 3D-машины
+            ctx.fillStyle = car.color.body;
+            ctx.beginPath();
+            ctx.roundRect(-car.w * 0.5, -car.h * 0.5, car.w, car.h, 5);
+            ctx.fill();
+
+            // Кабина / крыша
+            ctx.fillStyle = car.color.roof;
+            ctx.beginPath();
+            ctx.roundRect(-car.w * 0.28, -car.h * 0.95, car.w * 0.54, car.h * 0.55, 4);
+            ctx.fill();
+
+            // Колёса
+            ctx.fillStyle = '#0b090a';
+            ctx.beginPath();
+            ctx.arc(-car.w * 0.3, car.h * 0.48, 5, 0, Math.PI * 2);
+            ctx.arc(car.w * 0.3, car.h * 0.48, 5, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Передняя фара и задний стоп-сигнал
+            ctx.fillStyle = '#fff3b0';
+            ctx.fillRect(dir > 0 ? (car.w * 0.5 - 3) : (-car.w * 0.5), -3, 3, 5);
+            ctx.fillStyle = '#ff0033';
+            ctx.fillRect(dir > 0 ? (-car.w * 0.5) : (car.w * 0.5 - 3), -3, 3, 5);
+
+            ctx.restore();
+        }
+
+        function renderLoop(now) {
+            const dt = Math.min((now - lastFrameTime) / 1000, 0.05); // защита от скачков при сворачивании вкладки
+            lastFrameTime = now;
+            totalTime += dt;
+            worldDistance += dt;
+
+            if (currentWorld === 'city') {
+                renderCity(dt);
+            } else {
+                renderValley(dt);
+            }
+
+            // Салют из частиц при слиянии кубов
             for (let i = mergeBursts.length - 1; i >= 0; i--) {
                 const p = mergeBursts[i];
                 p.x += p.vx;
@@ -546,21 +1095,26 @@
             }
             ctx.globalAlpha = 1;
 
-            requestAnimationFrame(renderBackground);
+            requestAnimationFrame(renderLoop);
         }
-        renderBackground();
+        requestAnimationFrame(renderLoop);
 
+        /* ================= ЛОГИКА ИГРЫ И РАЗДЕЛЬНЫХ РЕКОРДОВ ================= */
         let size = 4;
         let grid = [];
         let score = 0;
-        let bestScore = 0;
+        let bestScores = { 3: 0, 4: 0 };
+
         try {
-            bestScore = parseInt(localStorage.getItem('cuberush_best') || '0');
+            bestScores[3] = parseInt(localStorage.getItem('cuberush_best_3') || '0');
+            bestScores[4] = parseInt(localStorage.getItem('cuberush_best_4') || '0');
+            if (bestScores[3] >= 100 || localStorage.getItem('cuberush_city_unlocked') === '1') {
+                cityUnlocked = true;
+            }
         } catch (e) {}
 
         let selectedCell = null;
         let poppedCells = [];
-
         let dragSource = null;
         let dragGhost = null;
         let dragStartX = 0;
@@ -571,13 +1125,46 @@
         const boardEl = document.getElementById('board');
         const scoreEl = document.getElementById('score');
         const bestScoreEl = document.getElementById('best-score');
+        const bestLabelEl = document.getElementById('best-label');
         const gameOverEl = document.getElementById('game-over');
-        bestScoreEl.textContent = bestScore;
+        const worldBtnEl = document.getElementById('btn-world');
+        const unlockToastEl = document.getElementById('unlock-toast');
+
+        function updateWorldButton() {
+            if (!cityUnlocked) {
+                worldBtnEl.textContent = '🔒 100 в 3×3';
+                worldBtnEl.className = 'locked';
+            } else if (currentWorld === 'valley') {
+                worldBtnEl.textContent = '🌲 Долина';
+                worldBtnEl.className = '';
+            } else {
+                worldBtnEl.textContent = '🏙️ Мегаполис';
+                worldBtnEl.className = 'city-btn';
+            }
+        }
+
+        function toggleWorld() {
+            if (!cityUnlocked) {
+                unlockToastEl.innerHTML = '🔒 Набери рекорд 100 в режиме 3×3,<br>чтобы открыть Неоновый Мегаполис!';
+                unlockToastEl.classList.add('show');
+                setTimeout(() => unlockToastEl.classList.remove('show'), 2600);
+                return;
+            }
+            currentWorld = currentWorld === 'valley' ? 'city' : 'valley';
+            updateWorldButton();
+            if (tg?.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+        }
+
+        function refreshBestDisplay() {
+            bestLabelEl.textContent = `РЕКОРД ${size}×${size}`;
+            bestScoreEl.textContent = bestScores[size];
+        }
 
         function setMode(newSize) {
             size = newSize;
             document.getElementById('btn-3').classList.toggle('active', size === 3);
             document.getElementById('btn-4').classList.toggle('active', size === 4);
+            refreshBestDisplay();
             initGame();
         }
 
@@ -587,6 +1174,7 @@
             poppedCells = [];
             cleanupDrag();
             updateScore(0);
+            refreshBestDisplay();
             gameOverEl.style.display = 'none';
             grid = Array(size).fill().map(() => Array(size).fill(0));
 
@@ -896,12 +1484,26 @@
         function updateScore(add) {
             score += add;
             scoreEl.textContent = score;
-            if (score > bestScore) {
-                bestScore = score;
-                bestScoreEl.textContent = bestScore;
+            if (score > bestScores[size]) {
+                bestScores[size] = score;
+                bestScoreEl.textContent = score;
                 try {
-                    localStorage.setItem('cuberush_best', bestScore);
+                    localStorage.setItem(`cuberush_best_${size}`, score);
                 } catch (e) {}
+
+                // Открытие Мегаполиса при достижении 100 очков в режиме 3×3
+                if (size === 3 && score >= 100 && !cityUnlocked) {
+                    cityUnlocked = true;
+                    currentWorld = 'city';
+                    try {
+                        localStorage.setItem('cuberush_city_unlocked', '1');
+                    } catch (e) {}
+                    updateWorldButton();
+                    unlockToastEl.innerHTML = '🏙️ НОВАЯ ЛОКАЦИЯ ОТКРЫТА!<br>Добро пожаловать в Неоновый Мегаполис!';
+                    unlockToastEl.classList.add('show');
+                    if (tg?.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+                    setTimeout(() => unlockToastEl.classList.remove('show'), 3800);
+                }
             }
         }
 
@@ -909,6 +1511,8 @@
             return getEmptyCount() === 0 && !hasAvailableMoves();
         }
 
+        updateWorldButton();
+        refreshBestDisplay();
         initGame();
     </script>
 </body>
