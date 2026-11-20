@@ -32,8 +32,6 @@
             touch-action: none;
             position: relative;
         }
-
-        /* Живой 3D параллакс-фон на всю страницу */
         #bg-canvas {
             position: fixed;
             inset: 0;
@@ -42,7 +40,6 @@
             z-index: 0;
             pointer-events: none;
         }
-
         .game-wrapper {
             position: relative;
             z-index: 2;
@@ -52,7 +49,6 @@
             flex-direction: column;
             align-items: center;
         }
-
         .header {
             width: 100%;
             display: flex;
@@ -73,9 +69,9 @@
             flex: 1;
         }
         .score-label { font-size: 10px; letter-spacing: 1px; opacity: 0.75; font-weight: 800; }
-        .score-val { 
-            font-size: 20px; 
-            font-weight: 900; 
+        .score-val {
+            font-size: 20px;
+            font-weight: 900;
             text-shadow: 0 2px 4px rgba(0,0,0,0.6);
         }
         .controls {
@@ -99,12 +95,12 @@
             border-top: 1px solid rgba(255,255,255,0.22);
             transition: transform 0.1s, box-shadow 0.1s, background 0.2s;
         }
-        button.active { 
+        button.active {
             background: linear-gradient(180deg, #ff7eb3 0%, #ff3d81 100%);
             box-shadow: 0 5px 0 #9e1447, 0 8px 16px rgba(255, 61, 129, 0.45);
         }
-        button:active { 
-            transform: translateY(4px); 
+        button:active {
+            transform: translateY(4px);
             box-shadow: 0 1px 0 #141026;
         }
         .hint {
@@ -114,8 +110,6 @@
             margin-bottom: 12px;
             text-align: center;
         }
-
-        /* 3D Игровое поле со стеклянным эффектом */
         #board {
             width: 100%;
             aspect-ratio: 1 / 1;
@@ -128,12 +122,11 @@
             gap: 12px;
             position: relative;
             border: 1px solid rgba(255, 255, 255, 0.18);
-            box-shadow: 
+            box-shadow:
                 0 10px 0 var(--board-shadow),
                 0 22px 35px rgba(0, 0, 0, 0.65),
                 inset 0 2px 4px rgba(255, 255, 255, 0.15);
         }
-
         .slot {
             background: rgba(14, 12, 28, 0.65);
             border-radius: 14px;
@@ -143,7 +136,6 @@
             align-items: center;
             justify-content: center;
         }
-
         .tile {
             width: 100%;
             height: 100%;
@@ -160,22 +152,18 @@
             transition: transform 0.12s, box-shadow 0.12s, filter 0.12s;
             touch-action: none;
         }
-
         .tile:active { cursor: grabbing; }
-
         .tile.selected {
             transform: translateY(-4px) scale(1.05);
             outline: 3px solid #ffffff;
             filter: brightness(1.15);
             z-index: 5;
         }
-
         .slot.drag-over .tile {
             transform: scale(1.08);
             outline: 3px dashed #ffffff;
             filter: brightness(1.25);
         }
-
         .dragging-ghost {
             position: fixed;
             pointer-events: none;
@@ -185,7 +173,6 @@
             box-shadow: 0 18px 28px rgba(0,0,0,0.55) !important;
             transition: none !important;
         }
-
         @keyframes pop {
             0% { transform: scale(0.45); }
             70% { transform: scale(1.12); }
@@ -194,8 +181,6 @@
         .tile.pop {
             animation: pop 0.24s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
-
-        /* Всплывающие очки при слиянии */
         @keyframes floatUp {
             0% { opacity: 1; transform: translate(-50%, 0) scale(0.8); }
             100% { opacity: 0; transform: translate(-50%, -48px) scale(1.25); }
@@ -210,8 +195,6 @@
             text-shadow: 0 2px 6px rgba(0,0,0,0.85), 0 0 12px rgba(255, 190, 11, 0.8);
             animation: floatUp 0.75s ease-out forwards;
         }
-
-        /* Уникальные 3D-цвета для каждого числа */
         .v-2 {
             background: linear-gradient(180deg, #5cc8ff 0%, #249be8 100%);
             box-shadow: 0 6px 0 #1468a3, 0 10px 15px rgba(0,0,0,0.35);
@@ -254,4 +237,679 @@
         }
         .v-512 {
             background: linear-gradient(180deg, #5c7cfa 0%, #364fc7 100%);
-            box-shadow: 0 6px 0 #1c2b75, 0 10px
+            box-shadow: 0 6px 0 #1c2b75, 0 10px 15px rgba(0,0,0,0.4);
+            font-size: 27px;
+        }
+        .v-1024 {
+            background: linear-gradient(180deg, #94d82d 0%, #5c940d 100%);
+            box-shadow: 0 6px 0 #335405, 0 10px 15px rgba(0,0,0,0.4);
+            font-size: 22px;
+        }
+        .v-2048 {
+            background: linear-gradient(180deg, #ff6b6b 0%, #e03131 100%);
+            box-shadow: 0 6px 0 #8a1616, 0 10px 15px rgba(0,0,0,0.4);
+            font-size: 22px;
+        }
+        .v-high {
+            background: linear-gradient(180deg, #f8f9fa 0%, #adb5bd 100%);
+            color: #14161f;
+            text-shadow: 0 1px 0 #ffffff;
+            box-shadow: 0 6px 0 #495057, 0 10px 15px rgba(0,0,0,0.5);
+            font-size: 20px;
+        }
+        #game-over {
+            position: absolute;
+            inset: 0;
+            background: rgba(14, 12, 28, 0.9);
+            backdrop-filter: blur(6px);
+            border-radius: 22px;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            z-index: 20;
+        }
+        #game-over h2 {
+            margin: 0;
+            text-shadow: 0 3px 6px rgba(0,0,0,0.6);
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="bg-canvas"></canvas>
+
+    <div class="game-wrapper">
+        <div class="header">
+            <div class="score-box">
+                <div class="score-label">СЧЕТ</div>
+                <div class="score-val" id="score">0</div>
+            </div>
+            <div class="score-box">
+                <div class="score-label">РЕКОРД</div>
+                <div class="score-val" id="best-score">0</div>
+            </div>
+            <button onclick="spawnManualTwo()" style="max-width: 58px;" title="Добавить 2">+2</button>
+            <button onclick="initGame()" style="max-width: 82px;">Заново</button>
+        </div>
+
+        <div class="controls">
+            <button id="btn-3" onclick="setMode(3)">Режим 3×3</button>
+            <button id="btn-4" class="active" onclick="setMode(4)">Режим 4×4</button>
+        </div>
+
+        <div class="hint">Перетаскивай или нажимай на одинаковые кубы</div>
+
+        <div id="board">
+            <div id="game-over">
+                <h2>Поле заполнено!</h2>
+                <button onclick="initGame()" class="active" style="max-width: 180px;">Играть снова</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const tg = window.Telegram?.WebApp;
+        if (tg) {
+            tg.expand();
+            tg.ready();
+        }
+
+        const canvas = document.getElementById('bg-canvas');
+        const ctx = canvas.getContext('2d');
+        let cw = 0, ch = 0;
+
+        function resizeCanvas() {
+            cw = canvas.width = window.innerWidth;
+            ch = canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        let scrollX = 0;
+        let time = 0;
+
+        const clouds = Array.from({ length: 6 }, (_, i) => ({
+            x: i * 260,
+            y: 50 + (i % 3) * 45,
+            scale: 0.7 + (i % 3) * 0.25,
+            speed: 0.15 + (i % 2) * 0.08
+        }));
+
+        const ambientSparks = Array.from({ length: 35 }, () => ({
+            x: Math.random() * 1200,
+            y: Math.random() * 900,
+            r: 1.5 + Math.random() * 2.5,
+            speedX: 0.3 + Math.random() * 0.6,
+            speedY: -0.2 - Math.random() * 0.5,
+            phase: Math.random() * Math.PI * 2,
+            color: ['#ffe066', '#ff8fab', '#72efdd', '#ffffff'][Math.floor(Math.random() * 4)]
+        }));
+
+        let mergeBursts = [];
+
+        function spawnMergeBurst(screenX, screenY, color) {
+            for (let i = 0; i < 18; i++) {
+                const angle = (Math.PI * 2 * i) / 18 + (Math.random() - 0.5) * 0.3;
+                const speed = 2.5 + Math.random() * 4.5;
+                mergeBursts.push({
+                    x: screenX,
+                    y: screenY,
+                    vx: Math.cos(angle) * speed,
+                    vy: Math.sin(angle) * speed - 1.5,
+                    r: 3 + Math.random() * 3.5,
+                    life: 1.0,
+                    color: color
+                });
+            }
+        }
+
+        function drawMountainLayer(offsetX, baseY, peakHeight, stepWidth, colorBody, colorSnow) {
+            const totalW = stepWidth * 6;
+            const startX = -((offsetX % totalW + totalW) % totalW) - stepWidth;
+
+            for (let x = startX; x < cw + stepWidth * 2; x += stepWidth) {
+                const idx = Math.floor((x + offsetX) / stepWidth);
+                const hVar = Math.sin(idx * 1.7) * (peakHeight * 0.22);
+                const topX = x + stepWidth * 0.5;
+                const topY = baseY - peakHeight - hVar;
+
+                ctx.beginPath();
+                ctx.moveTo(x - 20, ch);
+                ctx.lineTo(x - 20, baseY);
+                ctx.lineTo(topX, topY);
+                ctx.lineTo(x + stepWidth + 20, baseY);
+                ctx.lineTo(x + stepWidth + 20, ch);
+                ctx.closePath();
+                ctx.fillStyle = colorBody;
+                ctx.fill();
+
+                ctx.beginPath();
+                ctx.moveTo(topX, topY);
+                ctx.lineTo(x + stepWidth + 20, baseY);
+                ctx.lineTo(topX + stepWidth * 0.1, baseY);
+                ctx.closePath();
+                ctx.fillStyle = 'rgba(15, 10, 35, 0.25)';
+                ctx.fill();
+
+                if (colorSnow) {
+                    const snowH = (baseY - topY) * 0.36;
+                    ctx.beginPath();
+                    ctx.moveTo(topX, topY);
+                    ctx.lineTo(topX - stepWidth * 0.18, topY + snowH);
+                    ctx.lineTo(topX - stepWidth * 0.05, topY + snowH * 0.78);
+                    ctx.lineTo(topX + stepWidth * 0.06, topY + snowH * 1.05);
+                    ctx.lineTo(topX + stepWidth * 0.19, topY + snowH * 0.85);
+                    ctx.closePath();
+                    ctx.fillStyle = colorSnow;
+                    ctx.fill();
+                }
+            }
+        }
+
+        function drawTree(x, baseY, height, swayAngle, colorLight, colorDark) {
+            ctx.save();
+            ctx.translate(x, baseY);
+            ctx.rotate(swayAngle);
+
+            ctx.fillStyle = '#2b192e';
+            ctx.fillRect(-height * 0.06, -height * 0.18, height * 0.12, height * 0.2);
+
+            for (let t = 0; t < 3; t++) {
+                const tierBottom = -height * (0.14 + t * 0.24);
+                const tierTop = tierBottom - height * 0.42;
+                const halfW = height * (0.34 - t * 0.07);
+
+                ctx.beginPath();
+                ctx.moveTo(0, tierTop);
+                ctx.lineTo(-halfW, tierBottom);
+                ctx.lineTo(0, tierBottom + height * 0.04);
+                ctx.closePath();
+                ctx.fillStyle = colorLight;
+                ctx.fill();
+
+                ctx.beginPath();
+                ctx.moveTo(0, tierTop);
+                ctx.lineTo(halfW, tierBottom);
+                ctx.lineTo(0, tierBottom + height * 0.04);
+                ctx.closePath();
+                ctx.fillStyle = colorDark;
+                ctx.fill();
+            }
+            ctx.restore();
+        }
+
+        function drawForestLayer(offsetX, baseY, spacing, minH, maxH, swaySpeed, colorLight, colorDark, groundColor) {
+            ctx.fillStyle = groundColor;
+            ctx.fillRect(0, baseY - 6, cw, ch - baseY + 10);
+
+            const totalW = spacing * 12;
+            const startX = -((offsetX % totalW + totalW) % totalW) - spacing;
+
+            for (let x = startX; x < cw + spacing * 2; x += spacing) {
+                const idx = Math.floor((x + offsetX) / spacing);
+                const h = minH + ((Math.sin(idx * 2.3) + 1) * 0.5) * (maxH - minH);
+                const sway = Math.sin(time * swaySpeed + idx * 1.1) * 0.065;
+                drawTree(x, baseY, h, sway, colorLight, colorDark);
+            }
+        }
+
+        function renderBackground() {
+            time += 0.03;
+            scrollX += 0.75;
+
+            const skyGrad = ctx.createLinearGradient(0, 0, 0, ch);
+            skyGrad.addColorStop(0, '#3a1c71');
+            skyGrad.addColorStop(0.38, '#d76d77');
+            skyGrad.addColorStop(0.68, '#ffaf7b');
+            skyGrad.addColorStop(1, '#241438');
+            ctx.fillStyle = skyGrad;
+            ctx.fillRect(0, 0, cw, ch);
+
+            const sunX = cw * 0.5;
+            const sunY = ch * 0.44;
+            const sunGlow = ctx.createRadialGradient(sunX, sunY, 10, sunX, sunY, 170);
+            sunGlow.addColorStop(0, 'rgba(255, 250, 210, 0.95)');
+            sunGlow.addColorStop(0.35, 'rgba(255, 200, 120, 0.45)');
+            sunGlow.addColorStop(1, 'rgba(255, 150, 130, 0)');
+            ctx.fillStyle = sunGlow;
+            ctx.beginPath();
+            ctx.arc(sunX, sunY, 170, 0, Math.PI * 2);
+            ctx.fill();
+
+            clouds.forEach(c => {
+                c.x -= c.speed;
+                if (c.x < -180) c.x = cw + 180;
+                ctx.fillStyle = 'rgba(255, 230, 240, 0.25)';
+                ctx.beginPath();
+                ctx.arc(c.x, c.y, 26 * c.scale, 0, Math.PI * 2);
+                ctx.arc(c.x + 24 * c.scale, c.y - 8 * c.scale, 32 * c.scale, 0, Math.PI * 2);
+                ctx.arc(c.x + 52 * c.scale, c.y, 24 * c.scale, 0, Math.PI * 2);
+                ctx.fill();
+            });
+
+            drawMountainLayer(scrollX * 0.22, ch * 0.62, 165, 220, '#6a4c93', '#fff0f5');
+            drawMountainLayer(scrollX * 0.42, ch * 0.70, 130, 175, '#4a306d', '#ffd6e7');
+            drawForestLayer(scrollX * 0.75, ch * 0.77, 46, 52, 78, 1.3, '#2d6a4f', '#1b4332', '#1b4332');
+
+            const riverY = ch * 0.77;
+            const riverH = ch * 0.09;
+            const riverGrad = ctx.createLinearGradient(0, riverY, 0, riverY + riverH);
+            riverGrad.addColorStop(0, '#48cae4');
+            riverGrad.addColorStop(0.5, '#90e0ef');
+            riverGrad.addColorStop(1, '#0096c7');
+            ctx.fillStyle = riverGrad;
+            ctx.fillRect(0, riverY, cw, riverH);
+
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.45)';
+            const waveStep = 90;
+            const waveStart = -((scrollX * 1.1) % waveStep);
+            for (let wx = waveStart; wx < cw; wx += waveStep) {
+                ctx.fillRect(wx, riverY + riverH * 0.3, 38, 3);
+                ctx.fillRect(wx + 25, riverY + riverH * 0.68, 26, 2.5);
+            }
+
+            drawForestLayer(scrollX * 1.35, ch * 0.91, 68, 75, 115, 1.8, '#1b4332', '#081c15', '#0d1b1e');
+
+            ambientSparks.forEach(s => {
+                s.x -= s.speedX;
+                s.y += s.speedY + Math.sin(time + s.phase) * 0.25;
+                if (s.x < -10) s.x = cw + 10;
+                if (s.y < -10) s.y = ch + 10;
+
+                const alpha = 0.45 + 0.55 * Math.sin(time * 2 + s.phase);
+                ctx.globalAlpha = alpha;
+                ctx.fillStyle = s.color;
+                ctx.beginPath();
+                ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+                ctx.fill();
+            });
+            ctx.globalAlpha = 1;
+
+            for (let i = mergeBursts.length - 1; i >= 0; i--) {
+                const p = mergeBursts[i];
+                p.x += p.vx;
+                p.y += p.vy;
+                p.vy += 0.14;
+                p.life -= 0.028;
+
+                if (p.life <= 0) {
+                    mergeBursts.splice(i, 1);
+                    continue;
+                }
+                ctx.globalAlpha = p.life;
+                ctx.fillStyle = p.color;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.r * p.life, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            ctx.globalAlpha = 1;
+
+            requestAnimationFrame(renderBackground);
+        }
+        renderBackground();
+
+        let size = 4;
+        let grid = [];
+        let score = 0;
+        let bestScore = 0;
+        try {
+            bestScore = parseInt(localStorage.getItem('cuberush_best') || '0');
+        } catch (e) {}
+
+        let selectedCell = null;
+        let poppedCells = [];
+
+        let dragSource = null;
+        let dragGhost = null;
+        let dragStartX = 0;
+        let dragStartY = 0;
+        let isDragging = false;
+        let hoveredSlot = null;
+
+        const boardEl = document.getElementById('board');
+        const scoreEl = document.getElementById('score');
+        const bestScoreEl = document.getElementById('best-score');
+        const gameOverEl = document.getElementById('game-over');
+        bestScoreEl.textContent = bestScore;
+
+        function setMode(newSize) {
+            size = newSize;
+            document.getElementById('btn-3').classList.toggle('active', size === 3);
+            document.getElementById('btn-4').classList.toggle('active', size === 4);
+            initGame();
+        }
+
+        function initGame() {
+            score = 0;
+            selectedCell = null;
+            poppedCells = [];
+            cleanupDrag();
+            updateScore(0);
+            gameOverEl.style.display = 'none';
+            grid = Array(size).fill().map(() => Array(size).fill(0));
+
+            boardEl.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
+            boardEl.style.gridTemplateRows = `repeat(${size}, 1fr)`;
+
+            const initialTiles = size === 3 ? 5 : 8;
+            for (let i = 0; i < initialTiles; i++) {
+                addRandomTile();
+            }
+            ensurePlayableBoard();
+            render();
+        }
+
+        function addRandomTile(forceTwo = false) {
+            let empty = [];
+            for (let r = 0; r < size; r++) {
+                for (let c = 0; c < size; c++) {
+                    if (grid[r][c] === 0) empty.push({r, c});
+                }
+            }
+            if (empty.length > 0) {
+                let {r, c} = empty[Math.floor(Math.random() * empty.length)];
+                grid[r][c] = forceTwo ? 2 : (Math.random() < 0.85 ? 2 : 4);
+                poppedCells.push(`${r}-${c}`);
+                return true;
+            }
+            return false;
+        }
+
+        function hasAvailableMoves() {
+            let seen = new Set();
+            for (let r = 0; r < size; r++) {
+                for (let c = 0; c < size; c++) {
+                    const val = grid[r][c];
+                    if (val > 0) {
+                        if (seen.has(val)) return true;
+                        seen.add(val);
+                    }
+                }
+            }
+            return false;
+        }
+
+        function ensurePlayableBoard() {
+            while (!hasAvailableMoves() && getEmptyCount() > 0) {
+                addRandomTile(true);
+            }
+        }
+
+        function spawnManualTwo() {
+            if (getEmptyCount() > 0) {
+                addRandomTile(true);
+                if (tg?.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+                render();
+                if (checkGameOver()) {
+                    gameOverEl.style.display = 'flex';
+                }
+            }
+        }
+
+        function getColorClass(val) {
+            if (val <= 2048) return `v-${val}`;
+            return 'v-high';
+        }
+
+        function getBurstColor(val) {
+            const colors = {
+                4: '#ffa73b',
+                8: '#ff4d6d',
+                16: '#c77dff',
+                32: '#38b000',
+                64: '#ff70a6',
+                128: '#48cae4',
+                256: '#ffe066'
+            };
+            return colors[val] || '#ffe066';
+        }
+
+        function showFloatingScore(r, c, points) {
+            const slot = boardEl.querySelector(`.slot[data-r="${r}"][data-c="${c}"]`);
+            if (!slot) return;
+            const rect = slot.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+
+            spawnMergeBurst(centerX, centerY, getBurstColor(points));
+
+            const badge = document.createElement('div');
+            badge.className = 'floating-score';
+            badge.textContent = `+${points}`;
+            badge.style.left = centerX + 'px';
+            badge.style.top = (centerY - 12) + 'px';
+            document.body.appendChild(badge);
+            setTimeout(() => badge.remove(), 750);
+        }
+
+        function getEmptyCount() {
+            let count = 0;
+            for (let r = 0; r < size; r++) {
+                for (let c = 0; c < size; c++) {
+                    if (grid[r][c] === 0) count++;
+                }
+            }
+            return count;
+        }
+
+        function mergeTiles(r1, c1, r2, c2) {
+            if (r1 === r2 && c1 === c2) return false;
+            const val1 = grid[r1][c1];
+            const val2 = grid[r2][c2];
+
+            if (val1 > 0 && val1 === val2) {
+                const newVal = val1 * 2;
+                grid[r1][c1] = 0;
+                grid[r2][c2] = newVal;
+
+                updateScore(newVal);
+                showFloatingScore(r2, c2, newVal);
+                selectedCell = null;
+                poppedCells = [`${r2}-${c2}`];
+
+                addRandomTile();
+                if (getEmptyCount() > size) {
+                    addRandomTile();
+                }
+
+                ensurePlayableBoard();
+
+                if (tg?.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
+                render();
+
+                if (checkGameOver()) {
+                    gameOverEl.style.display = 'flex';
+                    if (tg?.HapticFeedback) tg.HapticFeedback.notificationOccurred('error');
+                }
+                return true;
+            }
+            return false;
+        }
+
+        function handleCellClick(r, c) {
+            const val = grid[r][c];
+            if (val === 0) {
+                selectedCell = null;
+                render();
+                return;
+            }
+
+            if (!selectedCell) {
+                selectedCell = {r, c};
+                if (tg?.HapticFeedback) tg.HapticFeedback.selectionChanged();
+                render();
+                return;
+            }
+
+            if (selectedCell.r === r && selectedCell.c === c) {
+                selectedCell = null;
+                render();
+                return;
+            }
+
+            if (!mergeTiles(selectedCell.r, selectedCell.c, r, c)) {
+                selectedCell = {r, c};
+                if (tg?.HapticFeedback) tg.HapticFeedback.selectionChanged();
+                render();
+            }
+        }
+
+        function onPointerDown(e, r, c, tileEl) {
+            if (e.button !== undefined && e.button !== 0) return;
+            dragSource = {r, c, el: tileEl};
+            dragStartX = e.clientX;
+            dragStartY = e.clientY;
+            isDragging = false;
+        }
+
+        window.addEventListener('pointermove', (e) => {
+            if (!dragSource) return;
+
+            const dx = e.clientX - dragStartX;
+            const dy = e.clientY - dragStartY;
+
+            if (!isDragging && Math.hypot(dx, dy) > 6) {
+                isDragging = true;
+                selectedCell = null;
+
+                const rect = dragSource.el.getBoundingClientRect();
+                dragGhost = dragSource.el.cloneNode(true);
+                dragGhost.classList.add('dragging-ghost');
+                dragGhost.style.width = rect.width + 'px';
+                dragGhost.style.height = rect.height + 'px';
+                document.body.appendChild(dragGhost);
+
+                dragSource.el.style.opacity = '0.35';
+            }
+
+            if (isDragging && dragGhost) {
+                const w = dragGhost.offsetWidth;
+                const h = dragGhost.offsetHeight;
+                dragGhost.style.left = (e.clientX - w / 2) + 'px';
+                dragGhost.style.top = (e.clientY - h / 2) + 'px';
+
+                const elemBelow = document.elementFromPoint(e.clientX, e.clientY);
+                const slotBelow = elemBelow ? elemBelow.closest('.slot') : null;
+
+                if (hoveredSlot && hoveredSlot !== slotBelow) {
+                    hoveredSlot.classList.remove('drag-over');
+                    hoveredSlot = null;
+                }
+
+                if (slotBelow) {
+                    const tr = parseInt(slotBelow.dataset.r);
+                    const tc = parseInt(slotBelow.dataset.c);
+                    const sourceVal = grid[dragSource.r][dragSource.c];
+                    const targetVal = grid[tr][tc];
+
+                    if ((tr !== dragSource.r || tc !== dragSource.c) && targetVal === sourceVal) {
+                        slotBelow.classList.add('drag-over');
+                        hoveredSlot = slotBelow;
+                    }
+                }
+            }
+        });
+
+        window.addEventListener('pointerup', (e) => {
+            if (!dragSource) return;
+
+            if (!isDragging) {
+                const {r, c} = dragSource;
+                cleanupDrag();
+                handleCellClick(r, c);
+                return;
+            }
+
+            const elemBelow = document.elementFromPoint(e.clientX, e.clientY);
+            const slotBelow = elemBelow ? elemBelow.closest('.slot') : null;
+
+            let merged = false;
+            if (slotBelow) {
+                const tr = parseInt(slotBelow.dataset.r);
+                const tc = parseInt(slotBelow.dataset.c);
+                merged = mergeTiles(dragSource.r, dragSource.c, tr, tc);
+            }
+
+            cleanupDrag();
+            if (!merged) render();
+        });
+
+        window.addEventListener('pointercancel', () => {
+            if (dragSource) {
+                cleanupDrag();
+                render();
+            }
+        });
+
+        function cleanupDrag() {
+            if (dragGhost) {
+                dragGhost.remove();
+                dragGhost = null;
+            }
+            if (hoveredSlot) {
+                hoveredSlot.classList.remove('drag-over');
+                hoveredSlot = null;
+            }
+            dragSource = null;
+            isDragging = false;
+        }
+
+        function render() {
+            Array.from(boardEl.children).forEach(child => {
+                if (child.id !== 'game-over') child.remove();
+            });
+
+            for (let r = 0; r < size; r++) {
+                for (let c = 0; c < size; c++) {
+                    const slot = document.createElement('div');
+                    slot.className = 'slot';
+                    slot.dataset.r = r;
+                    slot.dataset.c = c;
+
+                    const val = grid[r][c];
+                    if (val > 0) {
+                        const tile = document.createElement('div');
+                        tile.className = `tile ${getColorClass(val)}`;
+                        tile.textContent = val;
+
+                        if (selectedCell && selectedCell.r === r && selectedCell.c === c) {
+                            tile.classList.add('selected');
+                        }
+                        if (poppedCells.includes(`${r}-${c}`)) {
+                            tile.classList.add('pop');
+                        }
+
+                        tile.addEventListener('pointerdown', (e) => onPointerDown(e, r, c, tile));
+                        slot.appendChild(tile);
+                    } else {
+                        slot.addEventListener('click', () => handleCellClick(r, c));
+                    }
+
+                    boardEl.appendChild(slot);
+                }
+            }
+            poppedCells = [];
+        }
+
+        function updateScore(add) {
+            score += add;
+            scoreEl.textContent = score;
+            if (score > bestScore) {
+                bestScore = score;
+                bestScoreEl.textContent = bestScore;
+                try {
+                    localStorage.setItem('cuberush_best', bestScore);
+                } catch (e) {}
+            }
+        }
+
+        function checkGameOver() {
+            return getEmptyCount() === 0 && !hasAvailableMoves();
+        }
+
+        initGame();
+    </script>
+</body>
+</html>
